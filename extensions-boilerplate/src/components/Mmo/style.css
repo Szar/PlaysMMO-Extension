@@ -55,12 +55,9 @@ body {
 	position: absolute;
 	left: 10px;
 	right: 10px;
-	bottom: 10px;
-	padding: 10px;
+	top: 10px;
 	background: rgba(0,0,0,0.5);
 	border: 1px solid #fff;
-
-
 }
 
 .menu--group {
@@ -73,7 +70,7 @@ body {
 	position: relative;
 	padding-bottom: 3px;
 }
-
+/*
 @media(min-width: 680px) {
 	.menu {
 		left: 0;
@@ -82,3 +79,4 @@ body {
 		width: 650px;
 	}
 }
+*/
