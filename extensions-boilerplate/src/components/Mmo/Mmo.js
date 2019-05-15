@@ -39,20 +39,15 @@ class Player extends Phaser.GameObjects.Sprite {
 		this.depth = conf.depth
 		this.direction = "sw"
 		this.moveText(conf.x, conf.y, conf.depth)
-
-		/*this.on('animationcomplete', function(animation, frame){
-			console.log(animation.key)
-			if(animation.key.indexOf('jump')!==-1) {
-				console.log("contains")
-				this.animate(this.facingForward(data.d)?'stand':'back_stand', true);
-        	}
-		}, this);*/
-
+		this.animating = false
 	}
 	
 	animate(a,l) {
-		l = typeof l==="undefined"?l=true:l;
-		this.anims.play(this.skin + a, l);
+		if(!this.animating) {
+			l = typeof l==="undefined"?l=true:l;
+			this.anims.play(this.skin + a, l);
+		}
+		
 	}
 	moveText(x, y, depth){
 		this.text.setPosition(x-(this.text.width / 2), y-(config.sprite.height/2)-(this.text.height));
@@ -82,6 +77,11 @@ class Player extends Phaser.GameObjects.Sprite {
 		var animation = this.facingForward(data.d) ? 'jump' : 'back_jump';
 		this.flipX = data.d == "se" || data.d == "ne";
 		this.animate(animation, false);
+		this.animating = true;
+		var t = this
+		setTimeout(function(){
+			t.animating = false
+		}, 500)
 		
 	}
 
@@ -195,7 +195,11 @@ var preload = function() {
 
 var create = function() {
 	loadAnimations(this)
-	var start = decodePoint(getRandomInt(-config.game.spawn_area, config.game.spawn_area), 0);
+	var start = {
+		x: getRandomInt(100, config.game.spawn_area+200),
+		y: getRandomInt(100, config.game.spawn_area+200)
+	}
+	//var start = decodePoint(, 0);
 	this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 	this.data = {
 		moving: false,
@@ -343,6 +347,7 @@ const MmoGame = function() {
 	socket.on("connected", function(data) {
 		game.data.id = data["id"]
 		for (let i = 0; i < data["players"].length; i++) {
+			console.log(data["players"][i]);
 			join(data["players"][i])
 		}
 	});

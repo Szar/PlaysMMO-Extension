@@ -30,8 +30,11 @@ body {
 	font-weight: normal;
 	font-size: 12px;
 	background: transparent;
-
+	position: relative;
+	width: 1920px;
+	height: 1080px;
 }
+
 
 .interface {}
 

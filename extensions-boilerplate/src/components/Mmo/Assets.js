@@ -31,38 +31,38 @@ export const assets = {
 			},
 		],
 		"animations": [{
-				"name": "stand",
-				"animated": false,
-				"frames": [3]
-			},
-			{
-				"name": "walk",
-				"animated": true,
-				"frames": [4, 5]
-			},
-			{
-				"name": "jump",
-				"animated": true,
-				"frames": [4, 5]
-			},
-			{
-				"name": "back_stand",
-				"animated": false,
-				"frames": [0]
-			},
-			{
-				"name": "back_walk",
-				"animated": true,
-				"frames": [1, 2]
-			}
-			,
-			{
-				"name": "back_jump",
-				"animated": true,
-				"frames": [1, 2]
-			}
-			
-		]
+			"name": "stand",
+			"animated": false,
+			"frames": [7]
+		},
+		{
+			"name": "walk",
+			"animated": true,
+			"frames": [8, 9]
+		},
+		{
+			"name": "jump",
+			"animated": true,
+			"frames": [10, 13], 
+		},
+		{
+			"name": "back_stand",
+			"animated": false,
+			"frames": [0]
+		},
+		{
+			"name": "back_walk",
+			"animated": true,
+			"frames": [1, 2]
+		}
+		,
+		{
+			"name": "back_jump",
+			"animated": true,
+			"frames": [3, 6]
+		}
+		
+	]
 	}
 
 };
