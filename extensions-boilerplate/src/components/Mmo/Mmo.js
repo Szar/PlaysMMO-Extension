@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 const config = require('./Config');
 export const socket = io('https://' + config.server.host + ":" + config.server.port + '/');
 
-var game;
+var game, frame_width, frame_height;
 
 class Player extends Phaser.GameObjects.Sprite {
 	constructor(conf) {
@@ -141,8 +141,8 @@ var createMap = function(game) {
 
 	const tile_width = 64,
 		tile_height = 32,
-		width = config.game.width,
-		height = config.game.height,
+		width = frame_width,
+		height = frame_height,
 		ratio = map.tiles[0].length / map.tiles.length,
 		n = Math.floor(width / tile_width),
 		centerX = width / 2,
@@ -286,6 +286,7 @@ var update = function() {
 		data.x = c.x
 		data.y = c.y
 		socket.emit('move', data);
+		console.log("=== Sent Move ===")
 	}
 	
 
@@ -293,74 +294,96 @@ var update = function() {
 
 const MmoGame = function() {
 	var t = this
-	new Phaser.Game({
-			type: Phaser.AUTO,
-			width: config.game.width,
-			height: config.game.height,
-			parent: 'playsmmo',
-			pixelArt: true,
-			transparent: true,
-			physics: {
-				default: 'arcade',
-				arcade: {
-					//debug: true
+	this.init = function(w,h){
+		frame_width = w
+		frame_height = h
+		new Phaser.Game({
+				type: Phaser.AUTO,
+				width: frame_width,
+				height: frame_height,
+				parent: 'playsmmo',
+				pixelArt: true,
+				transparent: true,
+				physics: {
+					default: 'arcade',
+					arcade: {
+						//debug: true
+					}
+				},
+				scene: {
+					preload: preload,
+					create: create,
+					update: update
 				}
-			},
-			scene: {
-				preload: preload,
-				create: create,
-				update: update
-			}
-	});
-	var join = function(player){
-		if(!game.players.hasOwnProperty(player["id"])) {
-			var c = decodePoint(player.x, player.y);
-			game.players[player["id"]] = new Player({
-				scene: game,
-				skin: player.skin,
-				x: c.x,
-				y: c.y,
-				name: player.name,
-				depth: player.y
-			})
-		}
-		
-	}
-	socket.on("joined", function(data) {
-		join(data)
-	})
-	socket.on("message", function(player) {
-		if(game.players.hasOwnProperty(player["id"])) {
-			game.players[player["id"]].message(player)
-		}
-	})
-	socket.on("update", function(player) {
-		if(game.players.hasOwnProperty(player["id"])) {
-			game.players[player["id"]].update(player)
-		}
-	})
-	socket.on("jump", function(player) {
-		if(game.players.hasOwnProperty(player["id"])) {
-			game.players[player["id"]].jump(player)
-		}
-	})
-	socket.on("connected", function(data) {
-		game.data.id = data["id"]
-		for (let i = 0; i < data["players"].length; i++) {
-			console.log(data["players"][i]);
-			join(data["players"][i])
-		}
-	});
-	socket.on('move', function(data){
-		game.players[data["id"]].move(data.x, data.y, data.d, data.moving)
-	});
+		});
 
-	socket.on('remove', function(player) {
-		if(game.players.hasOwnProperty(player["id"])) {
-			game.players[player["id"]].remove();
-			delete game.players[player["id"]];
+		this.resize = function(w,h){ 
+			console.log("resizing", x, y)
+			frame_width = w
+			frame_height = h
+			game.resize(frame_width, frame_height);
 		}
-	});
+		var join = function(player){
+			if(!game.players.hasOwnProperty(player["id"])) {
+				var c = decodePoint(player.x, player.y);
+				game.players[player["id"]] = new Player({
+					scene: game,
+					skin: player.skin,
+					x: c.x,
+					y: c.y,
+					name: player.name,
+					depth: player.y
+				})
+			}
+			
+		}
+		socket.on("joined", function(data) {
+			join(data)
+		})
+		socket.on("message", function(player) {
+			if(game.players.hasOwnProperty(player["id"])) {
+				console.log("=== message ===");
+				console.log(player);
+				game.players[player["id"]].message(player)
+			}
+		})
+		socket.on("update", function(player) {
+			
+			if(game.players.hasOwnProperty(player["id"])) {
+				console.log("=== Update ===");
+				console.log(player);
+				game.players[player["id"]].update(player)
+			}
+		})
+		socket.on("jump", function(player) {
+			if(game.players.hasOwnProperty(player["id"])) {
+				game.players[player["id"]].jump(player)
+			}
+		})
+		socket.on("connected", function(data) {
+			game.data.id = data["id"]
+			console.log("=== Players ===");
+			console.log(data["players"]);
+			for (let i = 0; i < data["players"].length; i++) {
+				
+				join(data["players"][i])
+			}
+		});
+		socket.on('move', function(data){
+			if(game.players.hasOwnProperty(data["id"])) {
+				console.log("=== Move ===");
+				console.log(data)
+				game.players[data["id"]].move(data.x, data.y, data.d, data.moving)
+			}
+		});
+
+		socket.on('remove', function(player) {
+			if(game.players.hasOwnProperty(player["id"])) {
+				game.players[player["id"]].remove();
+				delete game.players[player["id"]];
+			}
+		});
+	}
 
 }
 

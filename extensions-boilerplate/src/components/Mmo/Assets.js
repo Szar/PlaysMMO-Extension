@@ -9,7 +9,11 @@ export const assets = {
 		"json": require("./assets/tilesets/tileset.json")
 	},
 	"skins": {
-		"files": [{
+			"files": [{
+				"name": "default",
+				"file": require("./assets/sprites/skin_default.png"),
+				"title": "Default",
+			},{
 				"name": "sonic",
 				"file": require("./assets/sprites/skin_sonic.png"),
 				"title": "Sonic",

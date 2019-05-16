@@ -9,7 +9,6 @@ export default class App extends React.Component{
         super(props)
         this.Authentication = new Authentication()
 		this.updateSkin = this.updateSkin.bind(this);
-        //if the extension is running on twitch or dev rig, set the shorthand here. otherwise, set to null. 
         this.twitch = window.Twitch ? window.Twitch.ext : null
         this.state={
             finishedLoading:false,
@@ -73,23 +72,20 @@ export default class App extends React.Component{
     }
 
     componentDidMount(){
+		var x = 0,
+			y = 0;
         if(this.twitch){
             this.twitch.onAuthorized((auth)=>{
-				console.log("Authorized");
 				var parts=auth.token.split(".");
 				var payload=JSON.parse(window.atob(parts[1]));
-				console.log('https://api.twitch.tv/kraken/users/' + payload.user_id)
 				auth.user_id = payload.user_id
 				socket.emit('auth', auth);
-				
-				
-
+				x = this.sizer.clientWidth
+				y = this.sizer.clientHeight
+				Mmo.init(x,y);
 
                 this.Authentication.setToken(auth.token, auth.userId)
                 if(!this.state.finishedLoading){
-                    // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
-
-                    // now we've done the setup for the component, let's set the state to true to force a rerender with the correct data.
                     this.setState(()=>{
                         return {finishedLoading:true}
                     })
@@ -98,20 +94,41 @@ export default class App extends React.Component{
 
             this.twitch.listen('broadcast',(target,contentType,body)=>{
                 this.twitch.rig.log(`New PubSub message!\n${target}\n${contentType}\n${body}`)
-                // now that you've got a listener, do something with the result... 
-
-                // do something...
 
             })
 
             this.twitch.onVisibilityChanged((isVisible,_c)=>{
-                this.visibilityChanged(isVisible)
+				this.visibilityChanged(isVisible);
+				console.log(isVisible,_c);
             })
 
-            this.twitch.onContext((context,delta)=>{
-                this.contextUpdate(context,delta)
+            this.twitch.onContext((context,contextFields)=>{
+				this.contextUpdate(context,contextFields)
+				console.log(context,contextFields);
+				if (contextFields.includes("displayResolution")) {
+					var resSplit = context["displayResolution"].split(resSplit),
+						resolution = {
+							x:parseInt(resSplit[0]),
+							y:parseInt(resSplit[1])
+						}
+					if(resolution["x"]!=x||resolution["y"]!=y){
+						x = resolution["x"]
+						y = resolution["y"]
+						Mmo.resize(x,y);
+					}
+				}
+				/*
+					
+					var 
+				}*/
+				
+				//this.setState({ elementHeight: this.interface.clientHeight });
             })
-        }
+		}
+		else {
+			console.log("== NO TWITCH ==")
+			//Mmo.init(this.interface.clientWidth, this.interface.clientHeight);
+		}
     }
 
     componentWillUnmount(){
@@ -142,11 +159,13 @@ export default class App extends React.Component{
 							</div>
 						</div>
 					</div>
+					<div className="sizer" ref={element => this.sizer = element}></div>
 				</div>
             )
         }else{
             return (
-                <div className="App">
+                <div className="interface">
+					<div className="sizer" ref={element => this.sizer = element}></div>
                 </div>
             )
         }
