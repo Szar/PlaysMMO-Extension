@@ -99,12 +99,12 @@ export default class App extends React.Component{
 
             this.twitch.onVisibilityChanged((isVisible,_c)=>{
 				this.visibilityChanged(isVisible);
-				console.log(isVisible,_c);
+				//console.log(isVisible,_c);
             })
 
             this.twitch.onContext((context,contextFields)=>{
 				this.contextUpdate(context,contextFields)
-				console.log(context,contextFields);
+				//console.log(context,contextFields);
 				if (contextFields.includes("displayResolution")) {
 					var resSplit = context["displayResolution"].split(resSplit),
 						resolution = {
@@ -114,7 +114,9 @@ export default class App extends React.Component{
 					if(resolution["x"]!=x||resolution["y"]!=y){
 						x = resolution["x"]
 						y = resolution["y"]
-						Mmo.resize(x,y);
+						if(typeof Mmo !== "undefined") {
+							Mmo.resize(x,y);
+						}
 					}
 				}
 				/*

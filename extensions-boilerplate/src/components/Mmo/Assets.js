@@ -17,6 +17,14 @@ export const assets = {
 				"name": "sonic",
 				"file": require("./assets/sprites/skin_sonic.png"),
 				"title": "Sonic",
+			},{
+				"name": "wolfgang",
+				"file": require("./assets/sprites/skin_wolfgang.png"),
+				"title": "Wolfgang",
+			},{
+				"name": "tarou",
+				"file": require("./assets/sprites/skin_tarou.png"),
+				"title": "Tarou",
 			},
 			{
 				"name": "flamedramon",
@@ -33,6 +41,11 @@ export const assets = {
 				"file": require("./assets/sprites/skin_kuwagamon.png"),
 				"title": "Kuwagamon",
 			},
+			{
+				"name": "guest",
+				"file": require("./assets/sprites/skin_guest.png"),
+				"title": "Guest",
+			}
 		],
 		"animations": [{
 			"name": "stand",
